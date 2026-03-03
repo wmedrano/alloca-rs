@@ -55,6 +55,11 @@ unsafe extern "C-unwind" fn trampoline<F: FnOnce(*mut MaybeUninit<u8>)>(
 ///
 ///   This will trigger segfault on stack overflow.
 pub fn with_alloca<R>(size: usize, f: impl FnOnce(&mut [MaybeUninit<u8>]) -> R) -> R {
+    // alloca has undefined behavior when the size is 0.
+    if size == 0 {
+        return f(&mut []);
+    }
+
     let mut ret = MaybeUninit::uninit();
 
     let closure = |ptr| {

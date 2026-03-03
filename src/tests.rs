@@ -25,3 +25,12 @@ fn test_write() {
     });
     assert_eq!(x, 42 + 3 + 4);
 }
+
+#[test]
+fn test_zero_size() {
+    let x = alloca::with_alloca(0, |memory| {
+        assert_eq!(memory.len(), 0);
+        42
+    });
+    assert_eq!(x, 42);
+}
